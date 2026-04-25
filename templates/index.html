@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill Tracker</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#f4f6f9;
+  padding:40px;
+}
+
+.container{
+  max-width:950px;
+  margin:auto;
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.top-box{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.card{
+  background:#f8f9fa;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  border-left:5px solid #4CAF50;
+}
+
+.card h2{
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+.card p{
+  font-size:24px;
+  font-weight:bold;
+}
+
+form{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+  margin-bottom:30px;
+}
+
+input,select,button{
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+
+button{
+  background:#4CAF50;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#45a049;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:14px;
+  text-align:center;
+  border-bottom:1px solid #ddd;
+}
+
+th{
+  background:#4CAF50;
+  color:white;
+}
+
+.paid{
+  color:green;
+  font-weight:bold;
+}
+
+.pending{
+  color:red;
+  font-weight:bold;
+}
+
+.delete-btn{
+  background:red;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.delete-btn:hover{
+  background:darkred;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💡 Bill Tracker</h1>
+
+<!-- AUTO CARD -->
+<div class="top-box">
+
+  <div class="card">
+    <h2>Total Bills</h2>
+    <p>{{ total_bills }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Paid</h2>
+    <p>{{ paid_count }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Pending</h2>
+    <p>{{ pending_count }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Total Expense</h2>
+    <p>₹{{ total_amount }}</p>
+  </div>
+
+</div>
+
+<!-- FORM -->
+<form method="POST" action="{{ url_for('add') }}">
+
+  <input name="description" type="text" placeholder="Bill Name" required>
+
+  <input name="amount" type="number" step="0.01" placeholder="Amount" required>
+
+  <input name="date" type="date" required>
+
+   <select name="category" required>
+    <option value="">Category</option>
+    <option value="Utilities">Utilities</option>
+    <option value="Food">Grocery</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Transportation">Transportation</option> 
+  </select>
+
+  <select name="status" required>
+    <option value="">Status</option>
+    <option value="Paid">Paid</option>
+    <option value="Pending">Pending</option>
+  </select>
+
+  <button type="submit">Add Bill</button>
+
+</form>
+
+<table>
+
+<thead>
+<tr>
+  <th>Bill Name</th>
+  <th>Amount</th>
+  <th>Date</th>
+  <th>Status</th>
+  <th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for bill in expenses %}
+<tr>
+    <td>{{ bill.description }}</td>
+    <td>₹{{ bill.amount }}</td>
+    <td>{{ bill.date.strftime('%d %b %Y') }}</td>
+
+    {% if bill.status == 'Paid' %}
+        <td class="paid">Paid</td>
+    {% else %}
+        <td class="pending">Pending</td>
+    {% endif %}
+
+    <td>
+      <a href="{{ url_for('delete', id=bill.id) }}"
+         onclick="return confirm('Delete this bill?')">
+         <button class="delete-btn">Delete</button>
+      </a>
+    </td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>
